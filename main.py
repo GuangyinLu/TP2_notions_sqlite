@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
-    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView
+    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QTableWidget
 import sys
 from pkgCarnetGestion.AffichageTable import *
 from pkgCarnetGestion.OpenrationDB import *
@@ -22,7 +22,6 @@ class CarnetGestion(QMainWindow):
         self.xy_size = self.geometry()
 
         data = LireEnregistrement('carnet')
-        data[1].pop(0)
         self.headers = data[1]
         self.rows = data[0]
 
@@ -43,15 +42,34 @@ class CarnetGestion(QMainWindow):
         self.show()
 
     def initAffichage(self):
-        self.win_affichage = QWidget(parent = self)
+        def row_click():
+            i_click = self.tableView.selectedIndexes()
+            self.nom_click = i_click[0].data()
+            self.prenom_click = i_click[1].data()
+            self.tel_click = i_click[2].data()
+            self.mail_click = i_click[3].data()
+            btn_modifier.setVisible(True)
 
+            self.le_nom_modifier.setText(self.nom_click)
+            self.le_prenom_modifier.setText(self.prenom_click)
+            self.le_tel_modifier.setText(self.tel_click)
+            self.le_mail_modifier.setText(self.mail_click)
+
+        def modifier():
+            self.win_rechercher.hide()
+            self.win_ajouter.hide()
+            self.win_modifier.show()
+            self.win_about.hide()
+
+        self.win_affichage = QWidget(parent = self)
         btn_rechercher = QPushButton("Rechercher")
         btn_ajouter = QPushButton("Nouvelle")
         btn_modifier = QPushButton("Modifier")
+        btn_modifier.setVisible(False)
 
         btn_rechercher.clicked.connect(self.rechercher)
         btn_ajouter.clicked.connect(self.ajouter)
-        btn_modifier.clicked.connect(self.modifier)
+        btn_modifier.clicked.connect(modifier)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -67,6 +85,10 @@ class CarnetGestion(QMainWindow):
         self.tableView.setModel(self.model1)
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+        self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.tableView.clicked.connect(row_click)
+
 
         vbox.addWidget(self.tableView)
 
@@ -93,7 +115,6 @@ class CarnetGestion(QMainWindow):
             self.win_about.show()
 
             data = LireEnregistrement('carnet')
-            data[1].pop(0)
             self.headers = data[1]
             self.rows = data[0]
 
@@ -129,12 +150,10 @@ class CarnetGestion(QMainWindow):
         hbox_nom.addWidget(label_prenom)
         hbox_nom.addWidget(le_prenom)
         vbox.addLayout(hbox_nom)
-
         hbox_tel = QHBoxLayout()
         hbox_tel.addWidget(label_tel)
         hbox_tel.addWidget(le_tel)
         vbox.addLayout(hbox_tel)
-
         hbox_mail = QHBoxLayout()
         hbox_mail.addWidget(label_mail)
         hbox_mail.addWidget(le_mail)
@@ -147,21 +166,51 @@ class CarnetGestion(QMainWindow):
         self.win_ajouter.setFixedSize(self.long, self.high_down)
 
     def initModifier(self):
+        def save_modifier():
+            nomTable = 'carnet'
+            nom = self.le_nom_modifier.text()
+            prenom = self.le_prenom_modifier.text()
+            tel = self.le_tel_modifier.text()
+            mail = self.le_mail_modifier.text()
+            nom_old = self.nom_click
+            prenom_old = self.prenom_click
+            ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
+            data = LireEnregistrement('carnet')
+            self.headers = data[1]
+            self.rows = data[0]
+            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+            self.tableView.setModel(self.model2)
+            self.tableView.update()
+
+        def delete_modifier():
+            nomTable = 'carnet'
+            nom = self.le_nom_modifier.text()
+            prenom = self.le_prenom_modifier.text()
+            SupprimerEnregistrement(nomTable, nom, prenom)
+            data = LireEnregistrement('carnet')
+            self.headers = data[1]
+            self.rows = data[0]
+            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+            self.tableView.setModel(self.model2)
+            self.tableView.update()
+
         self.win_modifier = QWidget(parent = self)
 
-        label_nom = QLabel("Nom:")
-        le_nom = QLineEdit(self)
-        label_prenom = QLabel("Prenom:")
-        le_prenom = QLineEdit(self)
-        label_tel = QLabel("Tel:")
-        le_tel = QLineEdit(self)
-        label_mail = QLabel("Mail:")
-        le_mail = QLineEdit(self)
+        label_nom = QLabel("{0:4}".format("Nom:"))
+        self.le_nom_modifier = QLineEdit(self)
+        label_prenom = QLabel("{0:3}".format("Prenom:"))
+        self.le_prenom_modifier = QLineEdit(self)
+        label_tel = QLabel("{0:7}".format("Tel:"))
+        self.le_tel_modifier = QLineEdit(self)
+        label_mail = QLabel("{0:5}".format("Mail:"))
+        self.le_mail_modifier = QLineEdit(self)
         btn_save = QPushButton("Sauvegarder")
         btn_cancel = QPushButton("Annuler")
         btn_delete = QPushButton("Supprimer")
 
+        btn_save.clicked.connect(save_modifier)
         btn_cancel.clicked.connect(self.annuler)
+        btn_delete.clicked.connect(delete_modifier)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -173,19 +222,19 @@ class CarnetGestion(QMainWindow):
 
         hbox_nom = QHBoxLayout()
         hbox_nom.addWidget(label_nom)
-        hbox_nom.addWidget(le_nom)
+        hbox_nom.addWidget(self.le_nom_modifier)
         hbox_nom.addWidget(label_prenom)
-        hbox_nom.addWidget(le_prenom)
+        hbox_nom.addWidget(self.le_prenom_modifier)
         vbox.addLayout(hbox_nom)
 
         hbox_tel = QHBoxLayout()
         hbox_tel.addWidget(label_tel)
-        hbox_tel.addWidget(le_tel)
+        hbox_tel.addWidget(self.le_tel_modifier)
         vbox.addLayout(hbox_tel)
 
         hbox_mail = QHBoxLayout()
         hbox_mail.addWidget(label_mail)
-        hbox_mail.addWidget(le_mail)
+        hbox_mail.addWidget(self.le_mail_modifier)
         vbox.addLayout(hbox_mail)
 
         vbox.addLayout(hbox)
@@ -195,26 +244,44 @@ class CarnetGestion(QMainWindow):
         self.win_modifier.setFixedSize(self.long, self.high_down)
 
     def initRechercher(self):
+        def refresh_table_rechercher():
+            option = str(self.qcomb_choix.currentText())
+            text_recherer = str("{0}".format(self.le_chercher.text())).strip()
+            if option == 'Nom':
+                data = LireEnregistrement('carnet', nom = text_recherer.strip())
+            elif option == 'Prenom':
+                data = LireEnregistrement('carnet', prenom = text_recherer.strip())
+            elif option == 'Tel':
+                data = LireEnregistrement('carnet', tel = text_recherer.strip())
+            elif option == 'Mail':
+                data = LireEnregistrement('carnet', mail = text_recherer.strip())
+
+            self.headers = data[1]
+            self.rows = data[0]
+
+            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+            self.tableView.setModel(self.model2)
+            self.tableView.update()
+
         self.win_rechercher = QWidget(parent = self)
 
-        qcomb_choix = QComboBox()
-        qcomb_choix.addItems(["Nom", "Prenom", "Tel", "Mail"])
-        le_chercher = QLineEdit(self)
-        btn_rechercher = QPushButton("Rechercher")
+        self.qcomb_choix = QComboBox()
+        self.qcomb_choix.addItems(["Nom", "Prenom", "Tel", "Mail"])
+        self.le_chercher = QLineEdit(self)
         btn_cancel = QPushButton("Annuler")
 
+        self.le_chercher.textChanged.connect(refresh_table_rechercher)
         btn_cancel.clicked.connect(self.annuler)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
-        hbox.addWidget(btn_rechercher)
         hbox.addWidget(btn_cancel)
 
         vbox = QVBoxLayout()
 
         hbox_cherche = QHBoxLayout()
-        hbox_cherche.addWidget(qcomb_choix)
-        hbox_cherche.addWidget(le_chercher)
+        hbox_cherche.addWidget(self.qcomb_choix)
+        hbox_cherche.addWidget(self.le_chercher)
         vbox.addLayout(hbox_cherche)
         vbox.addLayout(hbox)
 
@@ -249,11 +316,7 @@ class CarnetGestion(QMainWindow):
         self.win_modifier.hide()
         self.win_about.hide()
 
-    def modifier(self):
-        self.win_rechercher.hide()
-        self.win_ajouter.hide()
-        self.win_modifier.show()
-        self.win_about.hide()
+
 
     def annuler(self):
         self.win_rechercher.hide()
