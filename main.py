@@ -105,7 +105,7 @@ class CarnetGestion(QMainWindow):
             nomTable = 'carnet'
             nom = str(le_nom.text())
             prenom = le_prenom.text()
-            tel = le_tel.text()
+            tel = le_tel.text().replace('-', '').replace('(', '').replace(')', '').strip()
             mail = le_mail.text()
             AjouterEnregistrement(nomTable, nom, prenom, tel, mail)
 
@@ -170,7 +170,7 @@ class CarnetGestion(QMainWindow):
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
             prenom = self.le_prenom_modifier.text()
-            tel = self.le_tel_modifier.text()
+            tel = self.le_tel_modifier.text().replace('-', '').replace('(', '').replace(')', '').strip()
             mail = self.le_mail_modifier.text()
             nom_old = self.nom_click
             prenom_old = self.prenom_click
@@ -246,15 +246,15 @@ class CarnetGestion(QMainWindow):
     def initRechercher(self):
         def refresh_table_rechercher():
             option = str(self.qcomb_choix.currentText())
-            text_recherer = str("{0}".format(self.le_chercher.text())).strip()
+            text_rechercher = str("{0}".format(self.le_chercher.text())).strip()
             if option == 'Nom':
-                data = LireEnregistrement('carnet', nom = text_recherer.strip())
+                data = LireEnregistrement('carnet', nom = text_rechercher)
             elif option == 'Prenom':
-                data = LireEnregistrement('carnet', prenom = text_recherer.strip())
+                data = LireEnregistrement('carnet', prenom = text_rechercher)
             elif option == 'Tel':
-                data = LireEnregistrement('carnet', tel = text_recherer.strip())
+                data = LireEnregistrement('carnet', tel = text_rechercher)
             elif option == 'Mail':
-                data = LireEnregistrement('carnet', mail = text_recherer.strip())
+                data = LireEnregistrement('carnet', mail = text_rechercher)
 
             self.headers = data[1]
             self.rows = data[0]
