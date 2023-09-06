@@ -1,8 +1,7 @@
-from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
-    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QTableWidget, QMessageBox
+    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox
 import sys
 from pkgCarnetGestion.AffichageTable import *
 from pkgCarnetGestion.OpenrationDB import *
@@ -60,7 +59,8 @@ class CarnetGestion(QMainWindow):
             self.btn_initialiser.setVisible(False)
 
         def initialiser():
-            rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les donées dans votre carnet!", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+            rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les donées dans votre carnet!",
+                                            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
 
             if rec_code != 65536:
                 DropTable('carnet')

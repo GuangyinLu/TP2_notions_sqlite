@@ -1,7 +1,6 @@
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
 import re
 
-
 def Afficher_Carnet_DB(headers, rows):
         countRow = len(rows)
         countColumn = len(headers)
