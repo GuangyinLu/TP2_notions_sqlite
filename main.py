@@ -2,7 +2,7 @@ from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
-    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QTableWidget
+    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QTableWidget, QMessageBox
 import sys
 from pkgCarnetGestion.AffichageTable import *
 from pkgCarnetGestion.OpenrationDB import *
@@ -10,7 +10,7 @@ from pkgCarnetGestion.OpenrationDB import *
 class CarnetGestion(QMainWindow):
     def __init__(self):
         super(CarnetGestion, self).__init__()
-        self.model1 = None
+        #self.model1 = None
         self.main_layout = QVBoxLayout()
         self.win_main = QWidget()
         self.win_main.setLayout(self.main_layout)
@@ -20,10 +20,6 @@ class CarnetGestion(QMainWindow):
         self.hign_up = int(self.high * 0.8)
         self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
-
-        data = LireEnregistrement('carnet')
-        self.headers = data[1]
-        self.rows = data[0]
 
         self.initAffichage()
         self.initModifier()
@@ -48,7 +44,7 @@ class CarnetGestion(QMainWindow):
             self.prenom_click = i_click[1].data()
             self.tel_click = i_click[2].data()
             self.mail_click = i_click[3].data()
-            btn_modifier.setVisible(True)
+            self.btn_modifier.setVisible(True)
 
             self.le_nom_modifier.setText(self.nom_click)
             self.le_prenom_modifier.setText(self.prenom_click)
@@ -60,26 +56,43 @@ class CarnetGestion(QMainWindow):
             self.win_ajouter.hide()
             self.win_modifier.show()
             self.win_about.hide()
+            self.btn_ajouter.setVisible(False)
+            self.btn_rechercher.setVisible(False)
+            self.btn_initialiser.setVisible(False)
+
+        def initialiser():
+            rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les donées dans votre carnet!", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
+
+            if rec_code != 65536:
+                DropTable('carnet')
+                CreerTable('carnet')
+                self.actualiser_Table()
 
         self.win_affichage = QWidget(parent = self)
-        btn_rechercher = QPushButton("Rechercher")
-        btn_ajouter = QPushButton("Nouvelle")
-        btn_modifier = QPushButton("Modifier")
-        btn_modifier.setVisible(False)
+        self.btn_initialiser = QPushButton("Initialiser Carnet")
+        self.btn_rechercher = QPushButton("Rechercher")
+        self.btn_ajouter = QPushButton("Nouvelle")
+        self.btn_modifier = QPushButton("Modifier")
+        self.btn_modifier.setVisible(False)
 
-        btn_rechercher.clicked.connect(self.rechercher)
-        btn_ajouter.clicked.connect(self.ajouter)
-        btn_modifier.clicked.connect(modifier)
+        self.btn_initialiser.clicked.connect(initialiser)
+        self.btn_rechercher.clicked.connect(self.rechercher)
+        self.btn_ajouter.clicked.connect(self.ajouter)
+        self.btn_modifier.clicked.connect(modifier)
 
         hbox = QHBoxLayout()
+        hbox.addWidget(self.btn_initialiser)
         hbox.addStretch(1)
-        hbox.addWidget(btn_rechercher)
-        hbox.addWidget(btn_ajouter)
-        hbox.addWidget(btn_modifier)
+        hbox.addWidget(self.btn_rechercher)
+        hbox.addWidget(self.btn_ajouter)
+        hbox.addWidget(self.btn_modifier)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
 
+        data = LireEnregistrement('carnet')
+        self.headers = data[1]
+        self.rows = data[0]
         self.model1 =Afficher_Carnet_DB(self.headers, self.rows)
         self.tableView = QTableView()
         self.tableView.setModel(self.model1)
@@ -88,7 +101,6 @@ class CarnetGestion(QMainWindow):
         self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableView.clicked.connect(row_click)
-
 
         vbox.addWidget(self.tableView)
 
@@ -103,33 +115,34 @@ class CarnetGestion(QMainWindow):
 
         def nouvell_Ajouter():
             nomTable = 'carnet'
-            nom = str(le_nom.text())
-            prenom = le_prenom.text()
-            tel = le_tel.text().replace('-', '').replace('(', '').replace(')', '').strip()
-            mail = le_mail.text()
-            AjouterEnregistrement(nomTable, nom, prenom, tel, mail)
+            nom = str(self.le_nom_ajouter.text()).strip()
+            prenom = self.le_prenom_ajouter.text().strip()
+            tel = self.le_tel_ajouter.text().replace('-', '').replace('(', '').replace(')', '').lstrip('+').strip()
+            mail = self.le_mail_ajouter.text().strip()
+            if Verifier_Tel(tel) and Verifier_Mail(mail):
+                AjouterEnregistrement(nomTable, nom, prenom, tel, mail)
+                self.win_rechercher.hide()
+                self.win_ajouter.hide()
+                self.win_modifier.hide()
+                self.win_about.show()
+                self.actualiser_Table()
+            elif Verifier_Tel(tel):
+                QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+            elif Verifier_Mail(mail):
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
+            else:
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
 
-            self.win_rechercher.hide()
-            self.win_ajouter.hide()
-            self.win_modifier.hide()
-            self.win_about.show()
-
-            data = LireEnregistrement('carnet')
-            self.headers = data[1]
-            self.rows = data[0]
-
-            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
-            self.tableView.setModel(self.model2)
-            self.tableView.update()
+            self.initialiser_LE()
 
         label_nom = QLabel("Nom:")
-        le_nom = QLineEdit(self)
+        self.le_nom_ajouter = QLineEdit(self)
         label_prenom = QLabel("Prenom")
-        le_prenom = QLineEdit(self)
+        self.le_prenom_ajouter = QLineEdit(self)
         label_tel = QLabel("Tel:")
-        le_tel = QLineEdit(self)
+        self.le_tel_ajouter = QLineEdit(self)
         label_mail = QLabel("Mail:")
-        le_mail = QLineEdit(self)
+        self.le_mail_ajouter = QLineEdit(self)
         btn_save = QPushButton("Sauvegarder")
         btn_cancel = QPushButton("Annuler")
 
@@ -146,17 +159,17 @@ class CarnetGestion(QMainWindow):
 
         hbox_nom = QHBoxLayout()
         hbox_nom.addWidget(label_nom)
-        hbox_nom.addWidget(le_nom)
+        hbox_nom.addWidget(self.le_nom_ajouter)
         hbox_nom.addWidget(label_prenom)
-        hbox_nom.addWidget(le_prenom)
+        hbox_nom.addWidget(self.le_prenom_ajouter)
         vbox.addLayout(hbox_nom)
         hbox_tel = QHBoxLayout()
         hbox_tel.addWidget(label_tel)
-        hbox_tel.addWidget(le_tel)
+        hbox_tel.addWidget(self.le_tel_ajouter)
         vbox.addLayout(hbox_tel)
         hbox_mail = QHBoxLayout()
         hbox_mail.addWidget(label_mail)
-        hbox_mail.addWidget(le_mail)
+        hbox_mail.addWidget(self.le_mail_ajouter)
         vbox.addLayout(hbox_mail)
 
         vbox.addLayout(hbox)
@@ -170,29 +183,29 @@ class CarnetGestion(QMainWindow):
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
             prenom = self.le_prenom_modifier.text()
-            tel = self.le_tel_modifier.text().replace('-', '').replace('(', '').replace(')', '').strip()
+            tel = self.le_tel_modifier.text().replace('-', '').replace('(', '').lstrip('+').replace(')', '').strip()
             mail = self.le_mail_modifier.text()
-            nom_old = self.nom_click
-            prenom_old = self.prenom_click
-            ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
-            data = LireEnregistrement('carnet')
-            self.headers = data[1]
-            self.rows = data[0]
-            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
-            self.tableView.setModel(self.model2)
-            self.tableView.update()
+            if Verifier_Tel(tel) and Verifier_Mail(mail):
+                nom_old = self.nom_click
+                prenom_old = self.prenom_click
+                ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
+                self.actualiser_Table()
+            elif Verifier_Tel(tel):
+                QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+            elif Verifier_Mail(mail):
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
+            else:
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+
+            self.initialiser_LE()
 
         def delete_modifier():
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
             prenom = self.le_prenom_modifier.text()
             SupprimerEnregistrement(nomTable, nom, prenom)
-            data = LireEnregistrement('carnet')
-            self.headers = data[1]
-            self.rows = data[0]
-            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
-            self.tableView.setModel(self.model2)
-            self.tableView.update()
+            self.actualiser_Table()
+            self.initialiser_LE()
 
         self.win_modifier = QWidget(parent = self)
 
@@ -258,7 +271,6 @@ class CarnetGestion(QMainWindow):
 
             self.headers = data[1]
             self.rows = data[0]
-
             self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
             self.tableView.setModel(self.model2)
             self.tableView.update()
@@ -271,6 +283,7 @@ class CarnetGestion(QMainWindow):
         btn_cancel = QPushButton("Annuler")
 
         self.le_chercher.textChanged.connect(refresh_table_rechercher)
+        self.qcomb_choix.currentIndexChanged.connect(refresh_table_rechercher)
         btn_cancel.clicked.connect(self.annuler)
 
         hbox = QHBoxLayout()
@@ -299,7 +312,6 @@ class CarnetGestion(QMainWindow):
         label.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         vbox = QVBoxLayout()
         vbox.addWidget(label)
-        #self.win_about.setFixedSize(600, 250)
         self.win_about.setLayout(vbox)
 
         self.win_about.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
@@ -310,19 +322,52 @@ class CarnetGestion(QMainWindow):
         self.win_modifier.hide()
         self.win_about.hide()
 
+        self.btn_modifier.setVisible(False)
+        self.btn_ajouter.setVisible(False)
+        self.btn_initialiser.setVisible(False)
+
     def ajouter(self):
         self.win_rechercher.hide()
         self.win_ajouter.show()
         self.win_modifier.hide()
         self.win_about.hide()
 
-
+        self.btn_modifier.setVisible(False)
+        self.btn_rechercher.setVisible(False)
+        self.btn_initialiser.setVisible(False)
 
     def annuler(self):
         self.win_rechercher.hide()
         self.win_ajouter.hide()
         self.win_modifier.hide()
         self.win_about.show()
+
+        self.btn_modifier.setVisible(False)
+        self.btn_initialiser.setVisible(True)
+        self.btn_ajouter.setVisible(True)
+        self.btn_rechercher.setVisible(True)
+        self.initialiser_LE()
+
+        self.actualiser_Table()
+
+    def initialiser_LE(self):
+        self.le_nom_ajouter.setText("")
+        self.le_prenom_ajouter.setText("")
+        self.le_tel_ajouter.setText("")
+        self.le_mail_ajouter.setText("")
+        self.le_nom_modifier.setText("")
+        self.le_prenom_modifier.setText("")
+        self.le_tel_modifier.setText("")
+        self.le_mail_modifier.setText("")
+        self.le_tel_modifier.setText("")
+
+    def actualiser_Table(self):
+        data = LireEnregistrement('carnet')
+        self.headers = data[1]
+        self.rows = data[0]
+        self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+        self.tableView.setModel(self.model2)
+        self.tableView.update()
 
 app = QApplication(sys.argv)
 ex = CarnetGestion()

@@ -15,6 +15,13 @@ def CreerTable(nomTable):
     cur.execute(MaRequeteCreateTable)
     conn.commit()
 
+def DropTable(nomTable):
+    MaRequeteSupprimer = 'Drop table {}'.format(nomTable)
+    conn = sqlite3.connect("tp2.db")
+    cur = conn.cursor()
+    cur.execute(MaRequeteSupprimer)
+    conn.commit()
+
 def AjouterEnregistrement(nomTable, nom, prenom, tel, mail):
     MaRequeteInserer = "INSERT INTO {0}  (Nom,Prenom,Tel,Mail) VALUES ('{1}','{2}','{3}','{4}');".format(nomTable, nom, prenom, tel, mail)
     conn = sqlite3.connect("tp2.db")
@@ -54,7 +61,25 @@ def LireEnregistrement(nomTable, **arg):
     conn.commit()
     data_head.pop(0)
     data = Tri_sortie_DB(data)
-    return data, data_head
+
+    data_affichage = []
+    for x in data:
+        str_tel = str(x[3]).replace('-', '').strip()
+        if len(str_tel) == 10:
+            str_tel_1 = str_tel[-4:]
+            str_tel_2 = str_tel[-7:-4]
+            str_tel_3 = str_tel[-10:-7]
+            tel_new_str = str(str_tel_3 + '-' + str_tel_2 + '-' + str_tel_1)
+            data_affichage.append([x[0], x[1], x[2], tel_new_str, x[4]])
+        elif 14 > len(str_tel) > 10:
+            str_tel_1 = str_tel[-4:]
+            str_tel_2 = str_tel[-7:-4]
+            str_tel_3 = str_tel[-10:-7]
+            str_tel_4 = str_tel[:-10]
+            tel_new_str = str('(+' + str_tel_4 + ')' + str_tel_3 + '-' + str_tel_2 + '-' + str_tel_1)
+            data_affichage.append([x[0], x[1], x[2], tel_new_str, x[4]])
+
+    return data_affichage, data_head
 
 
 

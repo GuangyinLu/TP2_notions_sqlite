@@ -1,13 +1,5 @@
 from PyQt6.QtGui import QStandardItemModel, QStandardItem
-
-
-"""
-headers = ["Nom", "Prenom", "Tele", "Mail"]
-rows = [("Lu", "Guangyin", "514-553-9986", "luguangyin.mtl@gmail.com"),
-        ("Guerrero", "Claudia", "514-888-7799", "claudia@gmail.com"),
-        ("Cazeau", "Lynn", "438-654-9977", "Lynn@gmail.com"),
-        ("Babari", "Raouf", "438-987-2288", "raouf@gmail.com")]
-"""
+import re
 
 
 def Afficher_Carnet_DB(headers, rows):
@@ -32,4 +24,11 @@ def Tri_sortie_DB(rows):
                 rows[j], rows[j + 1] = rows[j + 1], rows[j]
     return rows
 
+def Verifier_Tel(tel_number):
+    pattern = r'^([1-9]\d{9,12})$'
+    return re.match(pattern, tel_number)
+
+def Verifier_Mail(email):
+    pattern = r'^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$'
+    return re.match(pattern, email)
 
