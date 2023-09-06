@@ -7,7 +7,7 @@ def CreerTable(nomTable):
     conn = sqlite3.connect("tp2.db")
     cur = conn.cursor()
 
-    MaRequeteCreateTable = "CREATE TABLE "
+    MaRequeteCreateTable = "CREATE TABLE IF NOT EXISTS "
     MaRequeteCreateTable = MaRequeteCreateTable + str(nomTable)
     MaRequeteCreateTable = MaRequeteCreateTable + """ ("ID"    INTEGER,"Nom"  TEXT,"Prenom"  TEXT,"Tel" TEXT,
         "Mail" TEXT, PRIMARY KEY("ID" AUTOINCREMENT)
@@ -53,6 +53,14 @@ def LireEnregistrement(nomTable, **arg):
         MaRequeteAfficher = "SELECT * FROM {0} WHERE UPPER({1}) LIKE UPPER('%{2}%') AND UPPER({3}) LIKE UPPER('%{4}%');".format(nomTable, list(arg)[0], list(arg.values())[0], list(arg)[1], list(arg.values())[1])
     conn = sqlite3.connect("tp2.db")
     cur = conn.cursor()
+
+    MaRequeteCreateTable = "CREATE TABLE IF NOT EXISTS "
+    MaRequeteCreateTable = MaRequeteCreateTable + str(nomTable)
+    MaRequeteCreateTable = MaRequeteCreateTable + """ ("ID"    INTEGER,"Nom"  TEXT,"Prenom"  TEXT,"Tel" TEXT,
+        "Mail" TEXT, PRIMARY KEY("ID" AUTOINCREMENT)
+    );"""
+    cur.execute(MaRequeteCreateTable)
+
     cur.execute(MaRequeteAfficher)
     data = cur.fetchall()
     data_head=[]

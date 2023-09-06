@@ -10,7 +10,6 @@ from pkgCarnetGestion.OpenrationDB import *
 class CarnetGestion(QMainWindow):
     def __init__(self):
         super(CarnetGestion, self).__init__()
-        #self.model1 = None
         self.main_layout = QVBoxLayout()
         self.win_main = QWidget()
         self.win_main.setLayout(self.main_layout)
