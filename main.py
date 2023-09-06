@@ -126,14 +126,13 @@ class CarnetGestion(QMainWindow):
                 self.win_modifier.hide()
                 self.win_about.show()
                 self.actualiser_Table()
+                self.initialiser_LE()
             elif Verifier_Tel(tel):
-                QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(self, 'Attention', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
             elif Verifier_Mail(mail):
-                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(self, 'Attention', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
             else:
-                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
-
-            self.initialiser_LE()
+                QMessageBox.warning(self, 'Attention', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
 
         label_nom = QLabel("Nom:")
         self.le_nom_ajouter = QLineEdit(self)
@@ -190,14 +189,13 @@ class CarnetGestion(QMainWindow):
                 prenom_old = self.prenom_click
                 ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
                 self.actualiser_Table()
+                self.initialiser_LE()
             elif Verifier_Tel(tel):
                 QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
             elif Verifier_Mail(mail):
                 QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
             else:
                 QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
-
-            self.initialiser_LE()
 
         def delete_modifier():
             nomTable = 'carnet'
