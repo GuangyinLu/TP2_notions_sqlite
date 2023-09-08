@@ -9,15 +9,22 @@ from pkgCarnetGestion.OpenrationDB import *
 class CarnetGestion(QMainWindow):
     def __init__(self):
         super(CarnetGestion, self).__init__()
-        self.main_layout = QVBoxLayout()
-        self.win_main = QWidget()
-        self.win_main.setLayout(self.main_layout)
+        #self.main_layout = QVBoxLayout()
+        #self.win_main = QWidget()
+        #self.win_main.setLayout(self.main_layout)
 
         self.long = 700
         self.high = 600
         self.hign_up = int(self.high * 0.8)
         self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
+
+        #PYQT_CSS
+        self.style_table = 'color: blue;''fon-size: 12px;''font-family: arial;'
+        self.style_label = 'color: darkblue;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
+        self.style_le = 'color: blue;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
+        self.style_btn = 'color: red;''fon-size: 12px;''font-family: arial;''font-weight: bold;''background-color: lightyellow;'
+        self.style_Qcombox = 'color: blue;''fon-size: 12px;''font-family: arial;'
 
         self.initAffichage()
         self.initModifier()
@@ -74,6 +81,11 @@ class CarnetGestion(QMainWindow):
         self.btn_modifier = QPushButton("Modifier")
         self.btn_modifier.setVisible(False)
 
+        self.btn_initialiser.setStyleSheet(self.style_btn)
+        self.btn_rechercher.setStyleSheet(self.style_btn)
+        self.btn_ajouter.setStyleSheet(self.style_btn)
+        self.btn_modifier.setStyleSheet(self.style_btn)
+
         self.btn_initialiser.clicked.connect(initialiser)
         self.btn_rechercher.clicked.connect(self.rechercher)
         self.btn_ajouter.clicked.connect(self.ajouter)
@@ -95,10 +107,21 @@ class CarnetGestion(QMainWindow):
         self.model1 =Afficher_Carnet_DB(self.headers, self.rows)
         self.tableView = QTableView()
         self.tableView.setModel(self.model1)
+        self.tableView.horizontalHeader().setStyleSheet("QHeaderView::section {"
+                     "spacing: 10px;" 
+                     "background-color: green;" 
+                     "color: white;"
+                     "border: 1px solid white;"
+                     "margin: 1px;"
+                     "text-align: right;"
+                     "font-family: arial;"
+                     "font-size: 16px; }")
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+
+        self.tableView.setStyleSheet(self.style_table)
         self.tableView.clicked.connect(row_click)
 
         vbox.addWidget(self.tableView)
@@ -134,18 +157,32 @@ class CarnetGestion(QMainWindow):
                 QMessageBox.warning(self, 'Attention', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
 
         label_nom = QLabel("Nom:")
+        label_nom.setFixedWidth(30)
         self.le_nom_ajouter = QLineEdit(self)
-        label_prenom = QLabel("Prenom")
+        label_prenom = QLabel("Prenom:")
+        label_prenom.setFixedWidth(50)
         self.le_prenom_ajouter = QLineEdit(self)
         label_tel = QLabel("Tel:")
+        label_tel.setFixedWidth(30)
         self.le_tel_ajouter = QLineEdit(self)
         label_mail = QLabel("Mail:")
+        label_mail.setFixedWidth(30)
         self.le_mail_ajouter = QLineEdit(self)
         btn_save = QPushButton("Sauvegarder")
         btn_cancel = QPushButton("Annuler")
 
-        btn_save.clicked.connect(nouvell_Ajouter)
+        btn_save.setStyleSheet(self.style_btn)
+        btn_cancel.setStyleSheet(self.style_btn)
+        label_nom.setStyleSheet(self.style_label)
+        label_prenom.setStyleSheet(self.style_label)
+        label_tel.setStyleSheet(self.style_label)
+        label_mail.setStyleSheet(self.style_label)
+        self.le_nom_ajouter.setStyleSheet(self.style_le)
+        self.le_prenom_ajouter.setStyleSheet(self.style_le)
+        self.le_tel_ajouter.setStyleSheet(self.style_le)
+        self.le_mail_ajouter.setStyleSheet(self.style_le)
 
+        btn_save.clicked.connect(nouvell_Ajouter)
         btn_cancel.clicked.connect(self.annuler)
 
         hbox = QHBoxLayout()
@@ -206,17 +243,33 @@ class CarnetGestion(QMainWindow):
 
         self.win_modifier = QWidget(parent = self)
 
-        label_nom = QLabel("{0:4}".format("Nom:"))
+        label_nom = QLabel("Nom:")
+        label_nom.setFixedWidth(30)
         self.le_nom_modifier = QLineEdit(self)
-        label_prenom = QLabel("{0:3}".format("Prenom:"))
+        label_prenom = QLabel("Prenom:")
+        label_prenom.setFixedWidth(50)
         self.le_prenom_modifier = QLineEdit(self)
-        label_tel = QLabel("{0:7}".format("Tel:"))
+        label_tel = QLabel("Tel:")
+        label_tel.setFixedWidth(30)
         self.le_tel_modifier = QLineEdit(self)
-        label_mail = QLabel("{0:5}".format("Mail:"))
+        label_mail = QLabel("Mail:")
+        label_mail.setFixedWidth(30)
         self.le_mail_modifier = QLineEdit(self)
         btn_save = QPushButton("Sauvegarder")
         btn_cancel = QPushButton("Annuler")
         btn_delete = QPushButton("Supprimer")
+
+        self.le_nom_modifier.setStyleSheet(self.style_le)
+        self.le_prenom_modifier.setStyleSheet(self.style_le)
+        self.le_tel_modifier.setStyleSheet(self.style_le)
+        self.le_mail_modifier.setStyleSheet(self.style_le)
+        label_nom.setStyleSheet(self.style_label)
+        label_prenom.setStyleSheet(self.style_label)
+        label_tel.setStyleSheet(self.style_label)
+        label_mail.setStyleSheet(self.style_label)
+        btn_save.setStyleSheet(self.style_btn)
+        btn_cancel.setStyleSheet(self.style_btn)
+        btn_delete.setStyleSheet(self.style_btn)
 
         btn_save.clicked.connect(save_modifier)
         btn_cancel.clicked.connect(self.annuler)
@@ -279,6 +332,10 @@ class CarnetGestion(QMainWindow):
         self.le_chercher = QLineEdit(self)
         btn_cancel = QPushButton("Annuler")
 
+        btn_cancel.setStyleSheet(self.style_btn)
+        self.le_chercher.setStyleSheet(self.style_le)
+        self.qcomb_choix.setStyleSheet(self.style_Qcombox)
+
         self.le_chercher.textChanged.connect(refresh_table_rechercher)
         self.qcomb_choix.currentIndexChanged.connect(refresh_table_rechercher)
         btn_cancel.clicked.connect(self.annuler)
@@ -304,11 +361,16 @@ class CarnetGestion(QMainWindow):
         self.win_about = QWidget(parent = self)
 
         label = QLabel("Bienvenu!")
-        label.setFont(QFont('Arial', 40))
+        label.setFont(QFont('Arial', 28))
         label.setStyleSheet("color: rgb(255, 0, 0);")
         label.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        label2 = QLabel('Lynn Cazeau\nClaudia Guerrero\nGuangyin Lu')
+        label2.setFont(QFont('Arial', 10))
+        label2.setStyleSheet("color: rgb(100, 100, 100);")
+        label2.setAlignment(Qt.AlignmentFlag.AlignHorizontal_Mask | Qt.AlignmentFlag.AlignVCenter)
         vbox = QVBoxLayout()
         vbox.addWidget(label)
+        vbox.addWidget(label2)
         self.win_about.setLayout(vbox)
 
         self.win_about.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
