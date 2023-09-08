@@ -19,10 +19,10 @@ class CarnetGestion(QMainWindow):
 
         #PYQT_CSS
         self.style_table = 'color: blue;''fon-size: 12px;''font-family: arial;'
-        self.style_label = 'color: darkblue;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
-        self.style_le = 'color: red;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
-        self.style_btn = 'color: red;''fon-size: 12px;''font-family: arial;''font-weight: bold;''background-color: lightyellow;'
-        self.style_Qcombox = 'color: blue;''fon-size: 12px;''font-family: arial;'
+        self.style_label = 'color: green;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
+        self.style_le = 'color: black;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
+        self.style_btn = 'color: darkblue;''fon-size: 12px;''font-family: arial;''font-weight: bold;''background-color: lightyellow;'
+        self.style_Qcombox = 'color: green;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
 
         self.initAffichage()
         self.initModifier()
@@ -219,21 +219,19 @@ class CarnetGestion(QMainWindow):
             prenom = self.le_prenom_modifier.text()
             tel = self.le_tel_modifier.text().replace('-', '').replace('(', '').lstrip('+').replace(')', '').strip()
             mail = self.le_mail_modifier.text()
-            if verifier_personne_exsist('carnet', nom, prenom):
-                if Verifier_Tel(tel) and Verifier_Mail(mail):
-                    nom_old = self.nom_click
-                    prenom_old = self.prenom_click
-                    ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
-                    self.actualiser_Table()
-                    self.initialiser_LE()
-                elif Verifier_Tel(tel):
-                    QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
-                elif Verifier_Mail(mail):
-                    QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
-                else:
-                    QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+            if Verifier_Tel(tel) and Verifier_Mail(mail):
+                nom_old = self.nom_click
+                prenom_old = self.prenom_click
+                ModifierEnregistrement(nomTable, nom, prenom, tel, mail, nom_old, prenom_old)
+                self.actualiser_Table()
+                self.initialiser_LE()
+            elif Verifier_Tel(tel):
+                QMessageBox.warning(self, 'Warning', 'Mail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+            elif Verifier_Mail(mail):
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!', QMessageBox.StandardButton.Ok,  QMessageBox.StandardButton.Ok)
             else:
-                QMessageBox.warning(self, 'Attention', 'Cettte personne Existe!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+
         def delete_modifier():
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
