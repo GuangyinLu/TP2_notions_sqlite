@@ -89,5 +89,14 @@ def LireEnregistrement(nomTable, **arg):
 
     return data_affichage, data_head
 
+def verifier_personne_exsist(nomTable, nom, prenom):
+    MaRequeteAfficher = "SELECT * FROM {0} WHERE UPPER(Nom) = UPPER('{1}') AND UPPER(Prenom) = UPPER('{2}');".format(nomTable, nom, prenom)
+    conn = sqlite3.connect("tp2.db")
+    cur = conn.cursor()
 
-
+    cur.execute(MaRequeteAfficher)
+    data = cur.fetchall()
+    if len(data) >= 1:
+        return False
+    else:
+        return True
