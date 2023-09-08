@@ -13,8 +13,8 @@ class CarnetGestion(QMainWindow):
         #self.win_main = QWidget()
         #self.win_main.setLayout(self.main_layout)
 
-        self.long = 700
-        self.high = 600
+        self.long = 600
+        self.high = 500
         self.hign_up = int(self.high * 0.8)
         self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
@@ -22,7 +22,7 @@ class CarnetGestion(QMainWindow):
         #PYQT_CSS
         self.style_table = 'color: blue;''fon-size: 12px;''font-family: arial;'
         self.style_label = 'color: darkblue;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
-        self.style_le = 'color: blue;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
+        self.style_le = 'color: red;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
         self.style_btn = 'color: red;''fon-size: 12px;''font-family: arial;''font-weight: bold;''background-color: lightyellow;'
         self.style_Qcombox = 'color: blue;''fon-size: 12px;''font-family: arial;'
 
@@ -107,19 +107,16 @@ class CarnetGestion(QMainWindow):
         self.model1 =Afficher_Carnet_DB(self.headers, self.rows)
         self.tableView = QTableView()
         self.tableView.setModel(self.model1)
-        self.tableView.horizontalHeader().setStyleSheet("QHeaderView::section {"
-                     "spacing: 10px;" 
-                     "background-color: green;" 
-                     "color: white;"
-                     "border: 1px solid white;"
-                     "margin: 1px;"
-                     "text-align: right;"
-                     "font-family: arial;"
-                     "font-size: 16px; }")
+        self.tableView.horizontalHeader().setStyleSheet("QHeaderView::section {""spacing: 10px;"
+                                                        "background-color: green;""color: white;"
+                                                        "border: 1px solid white;""margin: 1px;"
+                                                        "text-align: right;""font-family: arial;"
+                                                        "font-size: 16px; }")
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.tableView.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
 
         self.tableView.setStyleSheet(self.style_table)
         self.tableView.clicked.connect(row_click)
@@ -365,7 +362,7 @@ class CarnetGestion(QMainWindow):
         label.setStyleSheet("color: rgb(255, 0, 0);")
         label.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
         label2 = QLabel('Lynn Cazeau\nClaudia Guerrero\nGuangyin Lu')
-        label2.setFont(QFont('Arial', 10))
+        label2.setFont(QFont('Arial', 8))
         label2.setStyleSheet("color: rgb(100, 100, 100);")
         label2.setAlignment(Qt.AlignmentFlag.AlignHorizontal_Mask | Qt.AlignmentFlag.AlignVCenter)
         vbox = QVBoxLayout()
