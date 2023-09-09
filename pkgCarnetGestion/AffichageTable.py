@@ -1,5 +1,10 @@
-from PyQt6.QtGui import QStandardItemModel, QStandardItem
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QStandardItemModel, QStandardItem, QIcon, QPixmap
+from PyQt6.QtWidgets import QLabel, QTableWidgetItem
 import re
+
+from PyQt6.QtWidgets import QTableWidget
+
 
 def Afficher_Carnet_DB(headers, rows):
         countRow = len(rows)
@@ -12,6 +17,7 @@ def Afficher_Carnet_DB(headers, rows):
             for y in range(countColumn):
                 item = QStandardItem(rows[x][y+1])
                 model.setItem(x, y, item)
+
         return model
 
 def Tri_sortie_DB(rows):

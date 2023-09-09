@@ -2,7 +2,7 @@ from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
-    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox
+    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox, QTableWidgetItem
 import sys
 from pkgCarnetGestion.AffichageTable import *
 from pkgCarnetGestion.OpenrationDB import *
@@ -13,7 +13,7 @@ class CarnetGestion(QMainWindow):
 
         self.long = 600
         self.high = 500
-        self.hign_up = int(self.high * 0.8)
+        self.high_up = int(self.high * 0.8)
         self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
 
@@ -65,7 +65,7 @@ class CarnetGestion(QMainWindow):
             self.btn_initialiser.setVisible(False)
 
         def initialiser():
-            rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les donées dans votre carnet!",
+            rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les données dans votre carnet!",
                                             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
 
             if rec_code != 65536:
@@ -75,9 +75,13 @@ class CarnetGestion(QMainWindow):
 
         self.win_affichage = QWidget(parent = self)
         self.btn_initialiser = QPushButton("Initialiser Carnet")
+        self.btn_initialiser.setIcon(QIcon('./images/refresh.png'))
         self.btn_rechercher = QPushButton("Rechercher")
-        self.btn_ajouter = QPushButton("Nouvelle")
+        self.btn_rechercher.setIcon(QIcon('./images/recherch.png'))
+        self.btn_ajouter = QPushButton("Ajouter")
+        self.btn_ajouter.setIcon(QIcon('./images/ajoute.png'))
         self.btn_modifier = QPushButton("Modifier")
+        self.btn_modifier.setIcon(QIcon('./images/modifier.png'))
         self.btn_modifier.setVisible(False)
 
         self.btn_initialiser.setStyleSheet(self.style_btn)
@@ -98,12 +102,18 @@ class CarnetGestion(QMainWindow):
         hbox.addWidget(self.btn_modifier)
 
         vbox = QVBoxLayout()
+        hbox_espace = QHBoxLayout()
+        label_espace = QLabel()
+        label_espace.setFixedHeight(40)
+        hbox.addWidget(label_espace)
+        vbox.addLayout(hbox_espace)
         vbox.addLayout(hbox)
 
         data = LireEnregistrement('carnet')
         self.headers = data[1]
         self.rows = data[0]
         self.model1 =Afficher_Carnet_DB(self.headers, self.rows)
+
         self.tableView = QTableView()
         self.tableView.setModel(self.model1)
         self.tableView.horizontalHeader().setStyleSheet("QHeaderView::section {""spacing: 10px;"
@@ -125,7 +135,7 @@ class CarnetGestion(QMainWindow):
         self.win_affichage.setLayout(vbox)
 
         self.win_affichage.move(self.xy_size.x(), self.xy_size.y())
-        self.win_affichage.setFixedSize(self.long, self.hign_up)
+        self.win_affichage.setFixedSize(self.long, self.high_up)
         self.win_affichage.show()
 
     def initAjouter(self):
@@ -153,7 +163,7 @@ class CarnetGestion(QMainWindow):
                 else:
                     QMessageBox.warning(self, 'Attention', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
             else:
-                QMessageBox.warning(self, 'Attention', 'Cettte personne Existe!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
+                QMessageBox.warning(self, 'Attention', 'Cette personne est déjà dans la liste!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
 
         label_nom = QLabel("Nom:")
         label_nom.setFixedWidth(30)
@@ -209,7 +219,7 @@ class CarnetGestion(QMainWindow):
         vbox.addLayout(hbox)
 
         self.win_ajouter.setLayout(vbox)
-        self.win_ajouter.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
+        self.win_ajouter.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_ajouter.setFixedSize(self.long, self.high_down)
 
     def initModifier(self):
@@ -302,7 +312,7 @@ class CarnetGestion(QMainWindow):
         vbox.addLayout(hbox)
 
         self.win_modifier.setLayout(vbox)
-        self.win_modifier.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
+        self.win_modifier.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_modifier.setFixedSize(self.long, self.high_down)
 
     def initRechercher(self):
@@ -353,16 +363,16 @@ class CarnetGestion(QMainWindow):
 
         self.win_rechercher.setLayout(vbox)
 
-        self.win_rechercher.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
+        self.win_rechercher.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_rechercher.setFixedSize(self.long, self.high_down)
 
     def initAbout(self):
         self.win_about = QWidget(parent = self)
 
-        label = QLabel("Bienvenu!")
-        label.setFont(QFont('Arial', 28))
-        label.setStyleSheet("color: rgb(255, 0, 0);")
-        label.setAlignment(Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignVCenter)
+        label = QLabel("Lu-Ly-Cla's Address Book!")
+        label.setFont(QFont('Arial', 20))
+        label.setStyleSheet('color: rgb(255, 0, 0);''font-weight: bold;')
+        label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         label2 = QLabel('Lynn Cazeau\nClaudia Guerrero\nGuangyin Lu')
         label2.setFont(QFont('Arial', 8))
         label2.setStyleSheet("color: rgb(100, 100, 100);")
@@ -370,9 +380,22 @@ class CarnetGestion(QMainWindow):
         vbox = QVBoxLayout()
         vbox.addWidget(label)
         vbox.addWidget(label2)
-        self.win_about.setLayout(vbox)
 
-        self.win_about.move(self.xy_size.x(), self.xy_size.y() + self.hign_up)
+        label_carnet = QLabel(self)
+        pixmap = QPixmap('./images/carnet.png')
+        label_carnet.setPixmap(pixmap)
+        label_carnet.setScaledContents(True)
+        label_carnet.setFixedWidth(100)
+        vbox_image_carnet = QVBoxLayout()
+        vbox_image_carnet.addWidget(label_carnet)
+
+        hbox = QHBoxLayout()
+        hbox.addLayout(vbox_image_carnet)
+        hbox.addLayout(vbox)
+
+        self.win_about.setLayout(hbox)
+
+        self.win_about.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_about.setFixedSize(self.long, self.high_down)
     def rechercher(self):
         self.win_rechercher.show()
