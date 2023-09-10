@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 from PyQt6 import QtGui
-from PyQt6.QtCore import Qt
+
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
     QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox
@@ -15,8 +15,8 @@ class CarnetGestion(QMainWindow):
 
         self.long = 600
         self.high = 500
-        self.high_up = int(self.high * 0.75)
-        self.high_down = int(self.high * 0.25)
+        self.high_up = int(self.high * 0.8)
+        self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
 
         self.initAffichage()
@@ -71,12 +71,16 @@ class CarnetGestion(QMainWindow):
         self.win_affichage = QWidget(parent = self)
         self.win_affichage.setProperty('name', 'table')
         self.btn_initialiser = QPushButton("Initialiser Carnet")
+        self.btn_initialiser.setProperty('name', 'menu_btn')
         self.btn_initialiser.setIcon(QIcon('./images/refresh.png'))
         self.btn_rechercher = QPushButton("Rechercher")
+        self.btn_rechercher.setProperty('name', 'menu_btn')
         self.btn_rechercher.setIcon(QIcon('./images/recherch.png'))
         self.btn_ajouter = QPushButton("Ajouter")
+        self.btn_ajouter.setProperty('name', 'menu_btn')
         self.btn_ajouter.setIcon(QIcon('./images/ajoute.png'))
         self.btn_modifier = QPushButton("Modifier")
+        self.btn_modifier.setProperty('name', 'menu_btn')
         self.btn_modifier.setIcon(QIcon('./images/modifier.png'))
         self.btn_modifier.setVisible(False)
 
@@ -92,13 +96,16 @@ class CarnetGestion(QMainWindow):
         hbox.addWidget(self.btn_ajouter)
         hbox.addWidget(self.btn_modifier)
 
+        win_menu_btn = QWidget()
+        win_menu_btn.setProperty('name','menu')
+        win_menu_btn.setLayout(hbox)
+
+        vbox_menu = QVBoxLayout()
+        vbox_menu.addWidget(win_menu_btn)
+
         vbox = QVBoxLayout()
-        hbox_espace = QHBoxLayout()
-        label_espace = QLabel()
-        label_espace.setFixedHeight(40)
-        hbox.addWidget(label_espace)
-        vbox.addLayout(hbox_espace)
-        vbox.addLayout(hbox)
+        vbox.addLayout(vbox_menu)
+
 
         data = LireEnregistrement('carnet')
         self.headers = data[1]
