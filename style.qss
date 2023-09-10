@@ -1,0 +1,72 @@
+QTableView {
+  color: blue;
+  fon-size: 12px;
+  font-family: arial;
+}
+QLabel {
+  color: green;
+  fon-size: 16px;
+  font-family: arial;
+  font-weight: bold;
+ }
+QLineEdit {
+  color: black;
+  fon-size: 12px;
+  font-family: arial;
+  font-weight: bold;
+}
+QPushButton {
+  color: darkblue;
+  fon-size: 14px;
+  font-family: arial;
+  font-weight: bold;
+  background-color: lightyellow;
+}
+
+QComboBox {
+  color: green;
+  fon-size: 16px;
+  font-family: arial;
+  font-weight: bold;
+}
+QWidget [name = 'table']{
+  background: white;
+}
+
+QHeaderView::section:horizontal {
+  spacing: 10px;
+  background-color: green;
+  color: white;
+  border: 1px solid white;
+  margin: 1px;
+  text-align: right;
+  font-family: arial;
+  font-size: 16px;
+}
+QWidget [name = 'abouta'] {
+  font-family: Arial;
+  font-size: 24px;
+  color: red;
+  font-weight: bold;
+  qproperty-alignment: 'AlignLeft | AlignBottom';
+ }
+QWidget [name = 'aboutb'] {
+  font-family: Arial;
+  font-size: 12px;
+  color: rgb(100, 100, 100);
+  font-weight: bold;
+  qproperty-alignment: AlignRight;
+ }
+QWidget [name = 'menu'] {
+  background-color: darkgrey;
+  qproperty-alignment: AlignBottom;
+ }
+ QWidget [name='menu_btn'] {
+  background-color: darkgrey;
+  color: white;
+  font-family: arial;
+  font-size: 14px;
+  font-weight: bold;
+  qproperty-alignment: AlignBottom;
+}
+
