@@ -1,11 +1,13 @@
+import sys
+from pathlib import Path
+
 from PyQt6 import QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QMainWindow, QVBoxLayout, QTableView, \
-    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox, QTableWidgetItem
-import sys
-from pkgCarnetGestion.AffichageTable import *
-from pkgCarnetGestion.OpenrationDB import *
+    QHBoxLayout, QComboBox, QLineEdit, QHeaderView, QAbstractItemView, QMessageBox
+
+from pkgCarnetGestion.OperationDB import *
 
 class CarnetGestion(QMainWindow):
     def __init__(self):
@@ -13,16 +15,9 @@ class CarnetGestion(QMainWindow):
 
         self.long = 600
         self.high = 500
-        self.high_up = int(self.high * 0.8)
-        self.high_down = int(self.high * 0.2)
+        self.high_up = int(self.high * 0.75)
+        self.high_down = int(self.high * 0.25)
         self.xy_size = self.geometry()
-
-        #PYQT_CSS
-        self.style_table = 'color: blue;''fon-size: 12px;''font-family: arial;'
-        self.style_label = 'color: green;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
-        self.style_le = 'color: black;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
-        self.style_btn = 'color: darkblue;''fon-size: 12px;''font-family: arial;''font-weight: bold;''background-color: lightyellow;'
-        self.style_Qcombox = 'color: green;''fon-size: 12px;''font-family: arial;''font-weight: bold;'
 
         self.initAffichage()
         self.initModifier()
@@ -74,6 +69,7 @@ class CarnetGestion(QMainWindow):
                 self.actualiser_Table()
 
         self.win_affichage = QWidget(parent = self)
+        self.win_affichage.setProperty('name', 'table')
         self.btn_initialiser = QPushButton("Initialiser Carnet")
         self.btn_initialiser.setIcon(QIcon('./images/refresh.png'))
         self.btn_rechercher = QPushButton("Rechercher")
@@ -83,11 +79,6 @@ class CarnetGestion(QMainWindow):
         self.btn_modifier = QPushButton("Modifier")
         self.btn_modifier.setIcon(QIcon('./images/modifier.png'))
         self.btn_modifier.setVisible(False)
-
-        self.btn_initialiser.setStyleSheet(self.style_btn)
-        self.btn_rechercher.setStyleSheet(self.style_btn)
-        self.btn_ajouter.setStyleSheet(self.style_btn)
-        self.btn_modifier.setStyleSheet(self.style_btn)
 
         self.btn_initialiser.clicked.connect(initialiser)
         self.btn_rechercher.clicked.connect(self.rechercher)
@@ -112,22 +103,17 @@ class CarnetGestion(QMainWindow):
         data = LireEnregistrement('carnet')
         self.headers = data[1]
         self.rows = data[0]
-        self.model1 =Afficher_Carnet_DB(self.headers, self.rows)
+        self.model1 =self.Afficher_Carnet_DB(self.headers, self.rows)
 
         self.tableView = QTableView()
         self.tableView.setModel(self.model1)
-        self.tableView.horizontalHeader().setStyleSheet("QHeaderView::section {""spacing: 10px;"
-                                                        "background-color: green;""color: white;"
-                                                        "border: 1px solid white;""margin: 1px;"
-                                                        "text-align: right;""font-family: arial;"
-                                                        "font-size: 16px; }")
+
         self.tableView.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tableView.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.tableView.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.tableView.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tableView.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
 
-        self.tableView.setStyleSheet(self.style_table)
         self.tableView.clicked.connect(row_click)
 
         vbox.addWidget(self.tableView)
@@ -179,17 +165,6 @@ class CarnetGestion(QMainWindow):
         self.le_mail_ajouter = QLineEdit(self)
         btn_save = QPushButton("Sauvegarder")
         btn_cancel = QPushButton("Annuler")
-
-        btn_save.setStyleSheet(self.style_btn)
-        btn_cancel.setStyleSheet(self.style_btn)
-        label_nom.setStyleSheet(self.style_label)
-        label_prenom.setStyleSheet(self.style_label)
-        label_tel.setStyleSheet(self.style_label)
-        label_mail.setStyleSheet(self.style_label)
-        self.le_nom_ajouter.setStyleSheet(self.style_le)
-        self.le_prenom_ajouter.setStyleSheet(self.style_le)
-        self.le_tel_ajouter.setStyleSheet(self.style_le)
-        self.le_mail_ajouter.setStyleSheet(self.style_le)
 
         btn_save.clicked.connect(nouvell_Ajouter)
         btn_cancel.clicked.connect(self.annuler)
@@ -268,18 +243,6 @@ class CarnetGestion(QMainWindow):
         btn_cancel = QPushButton("Annuler")
         btn_delete = QPushButton("Supprimer")
 
-        self.le_nom_modifier.setStyleSheet(self.style_le)
-        self.le_prenom_modifier.setStyleSheet(self.style_le)
-        self.le_tel_modifier.setStyleSheet(self.style_le)
-        self.le_mail_modifier.setStyleSheet(self.style_le)
-        label_nom.setStyleSheet(self.style_label)
-        label_prenom.setStyleSheet(self.style_label)
-        label_tel.setStyleSheet(self.style_label)
-        label_mail.setStyleSheet(self.style_label)
-        btn_save.setStyleSheet(self.style_btn)
-        btn_cancel.setStyleSheet(self.style_btn)
-        btn_delete.setStyleSheet(self.style_btn)
-
         btn_save.clicked.connect(save_modifier)
         btn_cancel.clicked.connect(self.annuler)
         btn_delete.clicked.connect(delete_modifier)
@@ -330,7 +293,7 @@ class CarnetGestion(QMainWindow):
 
             self.headers = data[1]
             self.rows = data[0]
-            self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+            self.model2 = self.Afficher_Carnet_DB(self.headers, self.rows)
             self.tableView.setModel(self.model2)
             self.tableView.update()
 
@@ -340,10 +303,6 @@ class CarnetGestion(QMainWindow):
         self.qcomb_choix.addItems(["Nom", "Prenom", "Tel", "Mail"])
         self.le_chercher = QLineEdit(self)
         btn_cancel = QPushButton("Annuler")
-
-        btn_cancel.setStyleSheet(self.style_btn)
-        self.le_chercher.setStyleSheet(self.style_le)
-        self.qcomb_choix.setStyleSheet(self.style_Qcombox)
 
         self.le_chercher.textChanged.connect(refresh_table_rechercher)
         self.qcomb_choix.currentIndexChanged.connect(refresh_table_rechercher)
@@ -369,17 +328,15 @@ class CarnetGestion(QMainWindow):
     def initAbout(self):
         self.win_about = QWidget(parent = self)
 
-        label = QLabel("Lu-Ly-Cla's Address Book!")
-        label.setFont(QFont('Arial', 20))
-        label.setStyleSheet('color: rgb(255, 0, 0);''font-weight: bold;')
-        label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        label2 = QLabel('Lynn Cazeau\nClaudia Guerrero\nGuangyin Lu')
-        label2.setFont(QFont('Arial', 8))
-        label2.setStyleSheet("color: rgb(100, 100, 100);")
-        label2.setAlignment(Qt.AlignmentFlag.AlignHorizontal_Mask | Qt.AlignmentFlag.AlignVCenter)
+        label_about_a = QLabel("Lu-Ly-Cla's Address Book!")
+        label_about_a.setProperty('name', 'abouta')
+
+        label_about_b = QLabel('Lynn Cazeau\nClaudia Guerrero\nGuangyin Lu')
+        label_about_b.setProperty('name', 'aboutb')
+
         vbox = QVBoxLayout()
-        vbox.addWidget(label)
-        vbox.addWidget(label2)
+        vbox.addWidget(label_about_a)
+        vbox.addWidget(label_about_b)
 
         label_carnet = QLabel(self)
         pixmap = QPixmap('./images/carnet.png')
@@ -446,12 +403,27 @@ class CarnetGestion(QMainWindow):
         data = LireEnregistrement('carnet')
         self.headers = data[1]
         self.rows = data[0]
-        self.model2 = Afficher_Carnet_DB(self.headers, self.rows)
+        self.model2 = self.Afficher_Carnet_DB(self.headers, self.rows)
         self.tableView.setModel(self.model2)
         self.tableView.update()
 
+    def Afficher_Carnet_DB(self, headers, rows):
+        countRow = len(rows)
+        countColumn = len(headers)
+        model = QStandardItemModel(countRow, countColumn)
+
+        model.setHorizontalHeaderLabels(headers)
+
+        for x in range(countRow):
+            for y in range(countColumn):
+                item = QStandardItem(rows[x][y + 1])
+                model.setItem(x, y, item)
+
+        return model
+
 app = QApplication(sys.argv)
-ex = CarnetGestion()
-ex.show()
+app.setStyleSheet(Path('./style.qss').read_text())
+win = CarnetGestion()
+win.show()
 sys.exit(app.exec())
 
