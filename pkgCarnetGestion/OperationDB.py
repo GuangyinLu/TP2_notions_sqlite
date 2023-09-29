@@ -69,6 +69,8 @@ def LireEnregistrement(nomTable, **arg):
     data = Tri_sortie_DB(data)
 
     data_affichage = []
+
+    # supprimer le tiret dans les numéros de téléphone
     for x in data:
         str_tel = str(x[3]).replace('-', '').strip()
         if len(str_tel) == 10:
@@ -87,6 +89,7 @@ def LireEnregistrement(nomTable, **arg):
 
     return data_affichage, data_head
 
+# pour afficher les données par ordre alphabetique:
 def Tri_sortie_DB(rows):
     for i in range(len(rows)-1):
         for j in range(len(rows)-i-1):
@@ -95,6 +98,7 @@ def Tri_sortie_DB(rows):
             elif str(rows[j][1]).strip().lower() == str(rows[j+1][1]).strip().lower() and str(rows[j][2]).strip().lower() > (rows[j + 1][2]).strip().lower():
                 rows[j], rows[j + 1] = rows[j + 1], rows[j]
     return rows
+
 
 def verifier_personne_exsist(nomTable, nom, prenom):
     MaRequeteAfficher = "SELECT * FROM {0} WHERE UPPER(Nom) = UPPER('{1}') AND UPPER(Prenom) = UPPER('{2}');".format(nomTable, nom, prenom)

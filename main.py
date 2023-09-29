@@ -13,12 +13,14 @@ class CarnetGestion(QMainWindow):
     def __init__(self):
         super(CarnetGestion, self).__init__()
 
+        # la dimension de la fenêtre principale:
         self.long = 600
         self.high = 500
         self.high_up = int(self.high * 0.8)
         self.high_down = int(self.high * 0.2)
         self.xy_size = self.geometry()
 
+        # initialiser les Qwidgets (sous fenêtres):
         self.initAffichage()
         self.initModifier()
         self.initAjouter()
@@ -36,7 +38,9 @@ class CarnetGestion(QMainWindow):
         self.setWindowIcon(QtGui.QIcon('./images/cat.png'))
         self.show()
 
+    # pour afficher la fenêtre principale
     def initAffichage(self):
+        # la fonction pour selectionner la ligne:
         def row_click():
             i_click = self.tableView.selectedIndexes()
             self.nom_click = i_click[0].data()
@@ -50,6 +54,7 @@ class CarnetGestion(QMainWindow):
             self.le_tel_modifier.setText(self.tel_click)
             self.le_mail_modifier.setText(self.mail_click)
 
+        # la fonction pour modifier une ligne:
         def modifier():
             self.win_rechercher.hide()
             self.win_ajouter.hide()
@@ -59,6 +64,7 @@ class CarnetGestion(QMainWindow):
             self.btn_rechercher.setVisible(False)
             self.btn_initialiser.setVisible(False)
 
+        # la fonction pour initialiser la base de données:
         def initialiser():
             rec_code = QMessageBox.question(self, "Confirmer", "Ça va supprimer toutes les données dans votre carnet!",
                                             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.Yes)
@@ -107,6 +113,7 @@ class CarnetGestion(QMainWindow):
         vbox.addLayout(vbox_menu)
 
 
+        # importer les données de la base de données et les afficher:
         data = LireEnregistrement('carnet')
         self.headers = data[1]
         self.rows = data[0]
@@ -131,9 +138,11 @@ class CarnetGestion(QMainWindow):
         self.win_affichage.setFixedSize(self.long, self.high_up)
         self.win_affichage.show()
 
+    # pour afficher la fenêtre de <ajouter>
     def initAjouter(self):
         self.win_ajouter = QWidget(parent = self)
 
+        #la fonction pour la vérification des informations entrées:
         def nouvell_Ajouter():
             nomTable = 'carnet'
             nom = str(self.le_nom_ajouter.text()).strip()
@@ -204,7 +213,9 @@ class CarnetGestion(QMainWindow):
         self.win_ajouter.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_ajouter.setFixedSize(self.long, self.high_down)
 
+    # pour afficher la fenêtre de <Modifier>
     def initModifier(self):
+        # la fonction pour sauvegarder les informations modifiées:
         def save_modifier():
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
@@ -224,6 +235,7 @@ class CarnetGestion(QMainWindow):
             else:
                 QMessageBox.warning(self, 'Warning', 'Tel: Erreur!!!\nMail: Erreur!!!', QMessageBox.StandardButton.Ok, QMessageBox.StandardButton.Ok)
 
+        # la fonction pour supprimer une ligne
         def delete_modifier():
             nomTable = 'carnet'
             nom = self.le_nom_modifier.text()
@@ -285,6 +297,7 @@ class CarnetGestion(QMainWindow):
         self.win_modifier.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_modifier.setFixedSize(self.long, self.high_down)
 
+    # pour afficher la fenêtre de <rechercher>
     def initRechercher(self):
         def refresh_table_rechercher():
             option = str(self.qcomb_choix.currentText())
@@ -332,6 +345,7 @@ class CarnetGestion(QMainWindow):
         self.win_rechercher.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_rechercher.setFixedSize(self.long, self.high_down)
 
+    # pour afficher le titre du programme
     def initAbout(self):
         self.win_about = QWidget(parent = self)
 
@@ -361,6 +375,8 @@ class CarnetGestion(QMainWindow):
 
         self.win_about.move(self.xy_size.x(), self.xy_size.y() + self.high_up)
         self.win_about.setFixedSize(self.long, self.high_down)
+
+    # le bouton <rechercher>
     def rechercher(self):
         self.win_rechercher.show()
         self.win_ajouter.hide()
@@ -371,6 +387,7 @@ class CarnetGestion(QMainWindow):
         self.btn_ajouter.setVisible(False)
         self.btn_initialiser.setVisible(False)
 
+    # la fonction pour le bouton de <ajouter>
     def ajouter(self):
         self.win_rechercher.hide()
         self.win_ajouter.show()
@@ -381,6 +398,7 @@ class CarnetGestion(QMainWindow):
         self.btn_rechercher.setVisible(False)
         self.btn_initialiser.setVisible(False)
 
+    # la fonction pour le bouton de <Annuler>
     def annuler(self):
         self.win_rechercher.hide()
         self.win_ajouter.hide()
@@ -395,6 +413,7 @@ class CarnetGestion(QMainWindow):
 
         self.actualiser_Table()
 
+    # la fonction pour initialiser tous les <EditLine>s en mettant la valeur à null
     def initialiser_LE(self):
         self.le_nom_ajouter.setText("")
         self.le_prenom_ajouter.setText("")
@@ -406,6 +425,7 @@ class CarnetGestion(QMainWindow):
         self.le_mail_modifier.setText("")
         self.le_tel_modifier.setText("")
 
+    # la fonction pour actualiser les données dans la table
     def actualiser_Table(self):
         data = LireEnregistrement('carnet')
         self.headers = data[1]
@@ -414,6 +434,7 @@ class CarnetGestion(QMainWindow):
         self.tableView.setModel(self.model2)
         self.tableView.update()
 
+    # la fonction pour générer un model pour initialiser la Table (QTableView)
     def Afficher_Carnet_DB(self, headers, rows):
         countRow = len(rows)
         countColumn = len(headers)
